@@ -35,3 +35,16 @@ def get_links():
         "notes": l.notes,
         "created_at": l.created_at.isoformat()
     } for l in links])
+
+
+@bp.route("/links/<int:link_id>", methods=["DELETE"])
+@jwt_required()
+def delete_link(link_id):
+    user_id = get_jwt_identity()
+    link = Link.query.filter_by(id=link_id, user_id=user_id).first()
+    if not link:
+        return jsonify({"message": "Link not found"}), 404
+
+    db.session.delete(link)
+    db.session.commit()
+    return jsonify({"message": "Link deleted"}), 200

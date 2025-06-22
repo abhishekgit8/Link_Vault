@@ -1,12 +1,9 @@
+from dotenv import load_dotenv
 import os
 
-# class Config:
-#     SECRET_KEY = os.environ.get("SECRET_KEY", "super-secret-key")
-#     SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL", "postgresql://postgres:yourpassword@localhost/linkvault")
-#     SQLALCHEMY_TRACK_MODIFICATIONS = False
-#     JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY", "jwt-secret")
+load_dotenv()
+
 class Config:
-    SQLALCHEMY_DATABASE_URI = "postgresql://link123:link123@localhost:5432/linkvault"
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SECRET_KEY = "supersecretkey"
-    JWT_SECRET_KEY = "jwt-secret"
+    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")
+    SECRET_KEY = os.getenv("SECRET_KEY", "super-secret")
+    JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "jwt-secret")

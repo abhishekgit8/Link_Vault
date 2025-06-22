@@ -13,3 +13,9 @@ __pycache__/
 
 # OS
 .DS_Store
+
+# LinkVault
+linkvault.info.txt
+
+# Backend env
+linkvault-backend/.env
