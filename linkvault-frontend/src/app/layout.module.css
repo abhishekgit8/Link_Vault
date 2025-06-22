@@ -1,0 +1,18 @@
+.layout {
+  min-height: 100vh;
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+  background: #f7f7f7;
+  color: #1e293b;
+  padding: 0 0 0 0;
+  box-sizing: border-box;
+}
+@media (max-width: 900px) {
+  .layout {
+    padding: 0 0 0 0;
+  }
+}
+@media (max-width: 600px) {
+  .layout {
+    padding: 0 0 0 0;
+  }
+}
