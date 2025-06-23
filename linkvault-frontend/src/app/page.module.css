@@ -1,3 +1,226 @@
+/* --- PROFESSIONAL LANDING PAGE STYLES --- */
+.navbar {
+  width: 100%;
+  height: 64px;
+  background: #e0f2ff;
+  box-shadow: 0 2px 12px rgba(30,41,59,0.05);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  padding: 0 40px;
+}
+.navLogo {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -1px;
+  color: #2563eb;
+  display: flex;
+  align-items: center;
+}
+.logoText {
+  font-weight: 800;
+  color: #2563eb;
+  font-size: 1.45rem;
+  text-decoration: none;
+}
+.navLinks {
+  list-style: none;
+  display: flex;
+  gap: 32px;
+  margin: 0;
+  padding: 0;
+}
+.navLinks li a {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.07rem;
+  transition: color 0.18s;
+}
+.navLinks li a:hover {
+  color: #1e88e5;
+}
+.navActions {
+  display: flex;
+  gap: 16px;
+}
+.navBtnPrimary {
+  background: #2563eb;
+  color: #fff !important;
+  border-radius: 999px;
+  font-weight: 700;
+  padding: 8px 26px;
+  text-decoration: none;
+  transition: background 0.18s;
+  border: none;
+  font-size: 1rem;
+}
+.navBtnPrimary:hover {
+  background: #1e88e5;
+}
+.navBtnSecondary {
+  background: #b6e0fe;
+  color: #2563eb !important;
+  border-radius: 999px;
+  font-weight: 700;
+  padding: 8px 22px;
+  text-decoration: none;
+  border: none;
+  font-size: 1rem;
+  transition: background 0.18s;
+}
+.navBtnSecondary:hover {
+  background: #e0f2ff;
+}
+
+.hero {
+  width: 100%;
+  min-height: 75vh;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #e0f2ff;
+  color: #2563eb;
+  padding: 124px 0 48px 0;
+  position: relative;
+  flex-wrap: wrap;
+}
+.heroContent {
+  flex: 1 1 350px;
+  max-width: 520px;
+  /* margin-left: 8vw; */
+  z-index: 2;
+}
+.heroContent h1 {
+  font-size: 3.2rem;
+  font-weight: 800;
+  margin-bottom: 18px;
+  letter-spacing: -1px;
+  color: #2563eb;
+}
+.tagline {
+  font-size: 1.35rem;
+  font-weight: 400;
+  margin-bottom: 34px;
+  color: #3b82f6;
+}
+.aboutSection {
+  background: #f0f8ff;
+  padding: 64px 0 36px 0;
+  text-align: center;
+}
+.aboutSection h2 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #2563eb;
+  margin-bottom: 18px;
+}
+.aboutSection p {
+  font-size: 1.18rem;
+  color: #2563eb;
+  max-width: 660px;
+  margin: 0 auto;
+}
+.howSection {
+  background: #e0f2ff;
+  padding: 62px 0 46px 0;
+  text-align: center;
+}
+.howSection h2 {
+  font-size: 2.1rem;
+  font-weight: 700;
+  color: #2563eb;
+  margin-bottom: 28px;
+}
+.howSteps {
+  display: flex;
+  justify-content: center;
+  gap: 38px;
+  flex-wrap: wrap;
+}
+.howStep {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(30,41,59,0.07);
+  padding: 28px 26px 22px 26px;
+  min-width: 200px;
+  max-width: 260px;
+  flex: 1 1 200px;
+  margin: 12px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.howIcon {
+  font-size: 2.7rem;
+  margin-bottom: 12px;
+  color: #2563eb;
+}
+.howStep h3 {
+  font-size: 1.13rem;
+  font-weight: 700;
+  color: #2563eb;
+  margin-bottom: 7px;
+}
+.howStep p {
+  font-size: 1.01rem;
+  color: #2563eb;
+}
+.pricingSection {
+  background: #f0f8ff;
+  padding: 62px 0 52px 0;
+  text-align: center;
+}
+.pricingSection h2 {
+  font-size: 2.1rem;
+  font-weight: 700;
+  color: #2563eb;
+  margin-bottom: 28px;
+}
+.pricingCard {
+  background: #e0f2ff;
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(30,41,59,0.07);
+  padding: 34px 32px 28px 32px;
+  max-width: 340px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.pricingCard h3 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #2563eb;
+  margin-bottom: 18px;
+}
+.pricingCard ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 18px 0;
+  text-align: left;
+}
+.pricingCard ul li {
+  font-size: 1.08rem;
+  color: #2563eb;
+  margin-bottom: 7px;
+  padding-left: 1.1em;
+  position: relative;
+}
+.pricingCard ul li:before {
+  content: "• ";
+  color: #2563eb;
+  font-size: 1.2em;
+  position: absolute;
+  left: 0;
+}
+/* --- END PROFESSIONAL LANDING PAGE STYLES --- */
+
+
 .page {
   --gray-rgb: 0, 0, 0;
   --gray-alpha-200: rgba(var(--gray-rgb), 0.08);
@@ -369,7 +592,7 @@ a.secondary {
   text-align: center;
   padding: 22px 0 18px 0;
   font-size: 1rem;
-  margin-top: 16px;
+  /* margin-top: 16px; */
 }
 
 @media (max-width: 900px) {
