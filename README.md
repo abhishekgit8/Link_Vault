@@ -4,6 +4,9 @@ A simple micro saas that solve a real problem: fast, clean, personal knowledge m
 # Start PostgreSQL locally (if not running):
 sudo service postgresql start
 
+# Stop PostgreSQL locally (if running):
+sudo service postgresql stop
+
 
 # From the project root:
 docker build -t linkvault-backend ./linkvault-backend
