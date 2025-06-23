@@ -19,3 +19,7 @@ linkvault.info.txt
 
 # Backend env
 linkvault-backend/.env
+
+docker-compose.yml
+
+linkvault-backend/supervisord.conf
