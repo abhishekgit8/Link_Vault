@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "LinkVault",
+  title: "Linker",
 };
 
 export default function RootLayout({
