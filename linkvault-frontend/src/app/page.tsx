@@ -9,7 +9,8 @@ export default function LandingPage() {
   const [backendMessage, setBackendMessage] = useState("Loading...");
 
   useEffect(() => {
-    fetch("http://127.0.0.1:5000/")
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
+    fetch(`${backendUrl}/`)
       .then((res) => res.json())
       .then((data) => setBackendMessage(data.message))
       .catch(() => setBackendMessage("Backend not reachable"));

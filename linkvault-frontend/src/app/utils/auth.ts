@@ -9,7 +9,8 @@ export async function fetchWithAuth(input: RequestInfo, init: RequestInit = {}, 
   let res = await fetch(input, init);
   if (res.status === 401) {
     // Try to refresh the access token
-    const refreshRes = await fetch("http://localhost:5000/api/refresh", {
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
+    const refreshRes = await fetch(`${backendUrl}/api/refresh`, {
       method: "POST",
       credentials: "include", // send cookies
     });

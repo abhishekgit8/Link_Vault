@@ -32,7 +32,8 @@ export default function DashboardPage() {
       router.push("/");
       return;
     }
-    fetchWithAuth("http://localhost:5000/api/links", { method: "GET" }, () => {
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
+    fetchWithAuth(`${backendUrl}/api/links`, { method: "GET" }, () => {
       router.push("/");
     })
       .then(res => res.json())
@@ -56,7 +57,8 @@ export default function DashboardPage() {
     const newLink = { title, url, tags, notes };
 
     try {
-      const res = await fetchWithAuth("http://localhost:5000/api/links", {
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
+      const res = await fetchWithAuth(`${backendUrl}/api/links`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -79,7 +81,8 @@ export default function DashboardPage() {
           // fallback: refetch all links
           const token = localStorage.getItem("token");
           if (token) {
-            fetchWithAuth("http://localhost:5000/api/links", { method: "GET" }, () => {
+            const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
+            fetchWithAuth(`${backendUrl}/api/links`, { method: "GET" }, () => {
               router.push("/");
             })
               .then(res => res.json())
@@ -106,7 +109,8 @@ export default function DashboardPage() {
     if (!token) return;
   
     try {
-      const res = await fetchWithAuth(`http://localhost:5000/api/links/${id}`, {
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
+      const res = await fetchWithAuth(`${backendUrl}/api/links/${id}`, {
         method: "DELETE"
       }, () => {
         router.push("/");
@@ -248,19 +252,37 @@ export default function DashboardPage() {
           )}
           {/* Pagination controls */}
           {totalPages > 1 && (
-            <div className={styles.pagination}>
-              {Array.from({ length: totalPages }, (_, i) => (
-                <button
-                  key={i}
-                  className={styles.pageBtn + (page === i + 1 ? ' ' + styles.active : '')}
-                  onClick={() => setPage(i + 1)}
-                  disabled={page === i + 1}
-                >
-                  {i + 1}
-                </button>
-              ))}
-            </div>
-          )}
+  <div className={styles.pagination}>
+    <button
+      className={styles.pageBtn}
+      onClick={() => setPage(page - 1)}
+      disabled={page === 1}
+      aria-label="Previous page"
+    >
+      &#8592; Prev
+    </button>
+    {Array.from({ length: totalPages }, (_, i) => (
+      <button
+        key={i}
+        className={styles.pageBtn + (page === i + 1 ? ' ' + styles.active : '')}
+        onClick={() => setPage(i + 1)}
+        disabled={page === i + 1}
+        aria-current={page === i + 1 ? "page" : undefined}
+        aria-label={`Page ${i + 1}`}
+      >
+        {i + 1}
+      </button>
+    ))}
+    <button
+      className={styles.pageBtn}
+      onClick={() => setPage(page + 1)}
+      disabled={page === totalPages}
+      aria-label="Next page"
+    >
+      Next &#8594;
+    </button>
+  </div>
+)}
         </section>
       </div>
       {toast && (
