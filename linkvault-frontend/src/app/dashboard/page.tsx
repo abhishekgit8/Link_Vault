@@ -1,8 +1,10 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./dashboard.module.css";
+import Toast from "../components/Toast";
+import { fetchWithAuth } from "../utils/auth";
 
 interface Link {
   id: number;
@@ -19,6 +21,9 @@ export default function DashboardPage() {
   const [url, setUrl] = useState("");
   const [tags, setTags] = useState("");
   const [notes, setNotes] = useState("");
+  const [toast, setToast] = useState<{ message: string; type?: "success" | "error" } | null>(null);
+  const [search, setSearch] = useState("");
+  const [tagFilter, setTagFilter] = useState("");
   const router = useRouter();
 
   useEffect(() => {
@@ -27,12 +32,9 @@ export default function DashboardPage() {
       router.push("/");
       return;
     }
-
-    fetch("http://localhost:5000/api/links", {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
+    fetchWithAuth(`${backendUrl}/api/links`, { method: "GET" }, () => {
+      router.push("/");
     })
       .then(res => res.json())
       .then(data => {
@@ -55,27 +57,49 @@ export default function DashboardPage() {
     const newLink = { title, url, tags, notes };
 
     try {
-      const res = await fetch("http://localhost:5000/api/links", {
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
+      const res = await fetchWithAuth(`${backendUrl}/api/links`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(newLink),
+      }, () => {
+        router.push("/");
       });
 
       const data = await res.json();
       if (res.ok) {
-        // Add new link to UI immediately
-        setLinks([...links, { ...newLink, id: Date.now(), created_at: new Date().toISOString() }]);
+        // If backend returns the new link object, use it. Otherwise, refetch all links.
+        if (data && data.id) {
+          setLinks([...links, {
+            ...newLink,
+            id: data.id,
+            created_at: data.created_at || new Date().toISOString()
+          }]);
+        } else {
+          // fallback: refetch all links
+          const token = localStorage.getItem("token");
+          if (token) {
+            const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
+            fetchWithAuth(`${backendUrl}/api/links`, { method: "GET" }, () => {
+              router.push("/");
+            })
+              .then(res => res.json())
+              .then(data => Array.isArray(data) && setLinks(data));
+          }
+        }
         setTitle("");
         setUrl("");
         setTags("");
         setNotes("");
+        setToast({ message: "Link added successfully!", type: "success" });
       } else {
+        setToast({ message: data.message || "Failed to add link", type: "error" });
         console.error("Add link error:", data);
       }
     } catch (err) {
+      setToast({ message: "Failed to add link", type: "error" });
       console.error("Failed to add link:", err);
     }
   };
@@ -85,42 +109,83 @@ export default function DashboardPage() {
     if (!token) return;
   
     try {
-      const res = await fetch(`http://localhost:5000/api/links/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
+      const res = await fetchWithAuth(`${backendUrl}/api/links/${id}`, {
+        method: "DELETE"
+      }, () => {
+        router.push("/");
       });
   
       if (res.ok) {
         setLinks(links.filter(link => link.id !== id));
+        setToast({ message: "Link deleted.", type: "success" });
       } else {
         const data = await res.json();
+        setToast({ message: data.message || "Failed to delete link", type: "error" });
         console.error("Delete failed:", data.message);
       }
     } catch (err) {
+      setToast({ message: "Failed to delete link", type: "error" });
       console.error("Delete error:", err);
     }
   };
-  
+
+  // Tag list for filter dropdown
+  const tagsList = useMemo(() => {
+    const tagSet = new Set<string>();
+    links.forEach(link => {
+      link.tags?.split(",").map(t => t.trim()).filter(Boolean).forEach(t => tagSet.add(t));
+    });
+    return Array.from(tagSet).sort();
+  }, [links]);
+
+  // Sort links by created_at (newest first)
+  const sortedLinks = useMemo(() => {
+    return [...links].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+  }, [links]);
+
+  // Filtered links based on search and tag
+  const filteredLinks = useMemo(() => {
+    return sortedLinks.filter(link => {
+      const matchesTag = tagFilter ? link.tags?.split(",").map(t => t.trim()).includes(tagFilter) : true;
+      const matchesSearch = search ?
+        (link.title?.toLowerCase().includes(search.toLowerCase()) ||
+         link.url?.toLowerCase().includes(search.toLowerCase()) ||
+         link.notes?.toLowerCase().includes(search.toLowerCase())) : true;
+      return matchesTag && matchesSearch;
+    });
+  }, [sortedLinks, tagFilter, search]);
+
+  // Pagination
+  const [page, setPage] = useState(1);
+  const linksPerPage = 5;
+  const totalPages = Math.ceil(filteredLinks.length / linksPerPage);
+  const paginatedLinks = filteredLinks.slice((page - 1) * linksPerPage, page * linksPerPage);
+
+  // Reset page when filter/search changes
+  React.useEffect(() => { setPage(1); }, [search, tagFilter, links]);
 
   return (
     <div className={styles.dashboard}>
       <header className={styles.headerBar}>
-        <h1 className={styles["dashboard-title"]}>LinkVault Dashboard</h1>
+        <h1 className={styles["dashboard-title"]}>Linker Dashboard</h1>
         <div className={styles.logoutTooltipWrapper}>
           <button
             className={styles.logoutButton}
             onClick={() => {
-              localStorage.removeItem("token");
-              router.push("/");
+              (async () => {
+                await fetch("http://localhost:5000/api/logout", {
+                  method: "POST",
+                  credentials: "include"
+                });
+                localStorage.removeItem("token");
+                router.push("/");
+              })();
             }}
             aria-label="Logout"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#e11d48" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{verticalAlign: 'middle'}}>
-              <path d="M12 2v10" />
-              <circle cx="12" cy="18" r="4" />
-            </svg>
+            {/* Modern logout icon */}
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
           </button>
           <span className={styles.logoutTooltip}>Logout</span>
         </div>
@@ -140,11 +205,30 @@ export default function DashboardPage() {
 
         <section className={styles["links-section"]}>
           <h2>Saved Links</h2>
-          {links.length === 0 ? (
-            <p className={styles.empty}>No links added yet.</p>
+          <div className={styles["search-filter-bar"]}>
+            <input
+              className={styles.searchBar}
+              type="text"
+              placeholder="Search by title, url, notes..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+            />
+            <select
+              className={styles.filterSelect}
+              value={tagFilter}
+              onChange={e => setTagFilter(e.target.value)}
+            >
+              <option value="">All Tags</option>
+              {tagsList.map(tag => (
+                <option key={tag} value={tag}>{tag}</option>
+              ))}
+            </select>
+          </div>
+          {paginatedLinks.length === 0 ? (
+            <p className={styles.empty}>No links found.</p>
           ) : (
             <ul className={styles["links-list"]}>
-              {links.map((link, idx) => (
+              {paginatedLinks.map((link, idx) => (
                 <li key={link.id || idx} className={styles["link-card"]}>
                   <div className={styles["link-title"]}>{link.title}</div>
                   <div className={styles["link-url"]}>
@@ -158,16 +242,56 @@ export default function DashboardPage() {
                       onClick={() => handleDeleteLink(link.id)}
                       title="Delete this link"
                     >
-                      🗑️
+                      {/* Modern grey trash icon */}
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
                     </button>
                   </div>
                 </li>
-              )
-            )}
+              ))}
             </ul>
           )}
+          {/* Pagination controls */}
+          {totalPages > 1 && (
+  <div className={styles.pagination}>
+    <button
+      className={styles.pageBtn}
+      onClick={() => setPage(page - 1)}
+      disabled={page === 1}
+      aria-label="Previous page"
+    >
+      &#8592; Prev
+    </button>
+    {Array.from({ length: totalPages }, (_, i) => (
+      <button
+        key={i}
+        className={styles.pageBtn + (page === i + 1 ? ' ' + styles.active : '')}
+        onClick={() => setPage(i + 1)}
+        disabled={page === i + 1}
+        aria-current={page === i + 1 ? "page" : undefined}
+        aria-label={`Page ${i + 1}`}
+      >
+        {i + 1}
+      </button>
+    ))}
+    <button
+      className={styles.pageBtn}
+      onClick={() => setPage(page + 1)}
+      disabled={page === totalPages}
+      aria-label="Next page"
+    >
+      Next &#8594;
+    </button>
+  </div>
+)}
         </section>
       </div>
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 }

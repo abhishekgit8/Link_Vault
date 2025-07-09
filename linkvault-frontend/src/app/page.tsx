@@ -1,41 +1,3 @@
-// import styles from "./page.module.css";
-
-// export default function LandingPage() {
-//   return (
-//     <>
-//       <main>
-//         <section className={styles.hero}>
-//           <h1>LinkVault</h1>
-//           <p className={styles.tagline}>
-//             Your personal vault for saving, organizing, and accessing useful links.
-//           </p>
-//           <a href="/signup" className={styles.cta}>
-//             Get Started
-//           </a>
-//         </section>
-//         <section className={styles.features}>
-//           <div className={styles["feature-card"]}>
-//             <h2>Save important links instantly</h2>
-//             <p>Quickly add links you want to keep safe and handy.</p>
-//           </div>
-//           <div className={styles["feature-card"]}>
-//             <h2>Add tags and notes for context</h2>
-//             <p>Organize your links with tags and personal notes for easy recall.</p>
-//           </div>
-//           <div className={styles["feature-card"]}>
-//             <h2>Access everything in one dashboard</h2>
-//             <p>Find all your saved links in a clean, unified dashboard anytime.</p>
-//           </div>
-//         </section>
-//       </main>
-//       <footer className={styles.footer}>
-//         &copy; {new Date().getFullYear()} LinkVault. All rights reserved.
-//       </footer>
-//     </>
-//   );
-// }
-
-
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -47,7 +9,8 @@ export default function LandingPage() {
   const [backendMessage, setBackendMessage] = useState("Loading...");
 
   useEffect(() => {
-    fetch("http://127.0.0.1:5000/")
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
+    fetch(`${backendUrl}/`)
       .then((res) => res.json())
       .then((data) => setBackendMessage(data.message))
       .catch(() => setBackendMessage("Backend not reachable"));
@@ -60,9 +23,9 @@ export default function LandingPage() {
         {/* Hero Section */}
         <section id="hero" className={styles.hero}>
           <div className={styles.heroContent}>
-            <h1>LinkVault</h1>
+            <h1>Linker</h1>
             <p className={styles.tagline}>
-              Your personal vault for saving, organizing, and accessing useful links.
+              Your smart, beautiful link organizer
             </p>
             <div style={{ margin: "28px 0" }}>
               <a href="/signup" className={styles.cta}>
@@ -75,9 +38,9 @@ export default function LandingPage() {
 
         {/* About Section */}
         <section id="about" className={styles.aboutSection}>
-          <h2>About LinkVault</h2>
+          <h2>About Linker</h2>
           <p>
-            LinkVault is your secure, personal space for saving and organizing important links. Never lose track of a resource again—add tags, notes, and access your collection from anywhere.
+            Linker is your secure, smart, and beautiful space for saving and organizing important links. Never lose track of a resource again—add tags, notes, and access your collection from anywhere.
           </p>
         </section>
 
@@ -121,7 +84,7 @@ export default function LandingPage() {
       </main>
 
       <footer className={styles.footer}>
-        &copy; {new Date().getFullYear()} LinkVault. All rights reserved.
+        &copy; {new Date().getFullYear()} Linker. All rights reserved.
         <br />
         <strong>Backend Status:</strong> {backendMessage}
       </footer>

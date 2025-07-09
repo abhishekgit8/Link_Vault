@@ -21,5 +21,4 @@ linkvault.info.txt
 linkvault-backend/.env
 
 docker-compose.yml
-
 linkvault-backend/supervisord.conf

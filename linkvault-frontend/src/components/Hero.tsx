@@ -3,7 +3,7 @@ import styles from "../app/page.module.css";
 export default function Hero() {
   return (
     <section className={styles.hero}>
-      <h1>LinkVault</h1>
+      <h1>Linker</h1>
       <p className={styles.tagline}>
         Your personal vault for saving, organizing, and accessing useful links.
       </p>

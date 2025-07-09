@@ -8,7 +8,7 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object("config.Config")
 
-    CORS(app, supports_credentials=True, origins=["http://localhost:3000"])
+    CORS(app, supports_credentials=True)
     db.init_app(app)
     jwt.init_app(app)
 

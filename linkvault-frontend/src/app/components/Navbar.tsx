@@ -6,7 +6,7 @@ export default function Navbar() {
     <nav className={styles.navbar}>
       <div className={styles.navLogo}>
         <Link href="/">
-          <span className={styles.logoText}>🔗 LinkVault</span>
+          <span className={styles.logoText}>🔗 Linker</span>
         </Link>
       </div>
       <ul className={styles.navLinks}>
